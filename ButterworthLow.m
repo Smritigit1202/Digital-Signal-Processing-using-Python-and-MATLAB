@@ -1,0 +1,41 @@
+n=0:100;
+N=1024;% Number of FFT points
+f1=input('Enter the freq of signal-1 in Hz =');
+f2=input('Enter the freq of signal-2 in Hz =');
+fs=input('Enter the sampling freq in Hz =');
+fpass=input('Enter the pass-band freq =');
+fstop=input('Enter the stop-band freq =');
+rp=input('Enter the passband ripple =');
+rs=input('Enter the stopband ripple =');
+x1=sin(2*pi*n*(f1/fs));
+x2=sin(2*pi*n*(f2/fs));
+x=x1+x2;
+subplot(2,1,1); plot(n,x);
+xlabel('Time index [n]');
+ylabel('Amplitude');
+title('Input Signal');
+f=abs (fft (x,N));
+for i=1:N/2
+freq(i)=((i/N)*fs);
+end
+subplot(2,1,2); plot(freq,f(1:N/2)); 
+xlabel('Frequency in Hz');
+ylabel('Magnitude');
+title('FFT of Input Signal');
+w=0:0.001:pi;
+[n, wc]=buttord((2*fpass)/fs, (2*fstop)/fs, rp, rs);
+[b,a]=butter(n,wc);
+h=freqz (b,a,w);
+filtered_signal=filter(b,a,x);
+freq_domain=fft(filtered_signal, N);
+figure (2);
+subplot (2,1,2);
+plot(freq, abs (freq_domain(1:N/2)));
+xlabel('Frequency in Hz');
+ylabel('Magnitude'); 
+title('FFT of LPF Filtered Signal');
+subplot(2,1,1); 
+plot((w/2*pi), abs(h));
+xlabel('Freq in Hz');
+ylabel('Amplitude');
+title('Frequency Response of LPF');
